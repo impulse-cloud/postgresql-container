@@ -65,6 +65,18 @@ To run a replicated container with wal-e support.
 
 **HEARTBEAT_INTERVAL** - The interval in seconds for the hearbeat between the master and slave. (default: 5)
 
+### Initializing a new DB on startup
+
+It is possible to create a new database and user if **PG_INIT** os true. This is useful when being used with a web application which will create it's own tables but needs a database and user to already be present, for instance Wordpress or Django.
+
+**PG_DBNAME** - The name of the new database. (default: None)
+
+**PG_DBUSER** - The user to create as the database owner. (default: None)
+
+**PG_DBPASSWORD** - The password of the database owner. (default: None)
+
+*All three variables need to be set. The sytem will not create a database without a user and password specified.*
+
 ### WAL-E Environment Variables
 
 This is not meant to be in depth documentation for wal-e which is a continuous archiving framework for postgresql so we highly recommend that you visit the github repo located at [https://github.com/wal-e/wal-e](https://github.com/wal-e/wal-e). In order to configure wal-e provide the necessary environment variables and enable it with the flag below.

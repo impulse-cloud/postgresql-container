@@ -51,6 +51,15 @@ def pg_get_configuration():
 	# Get the postgres user password.
 	value = os.getenv('PG_PASSWORD', 'bettervoice')
 	configuration.update({ 'password': value })
+        # Get the db to create.
+        value = os.getenv('PG_DBNAME', None)
+        configuration.update({ 'dbname': value })
+        # Get the db user to create.
+        value = os.getenv('PG_DBUSER', None)
+        configuration.update({ 'dbuser': value })
+        # Get the db password to create.
+        value = os.getenv('PG_DBPASSWORD', None)
+        configuration.update({ 'dbpassword': value })
 	# Get the IP addresses that are allowed to connect to the db.
 	value = os.getenv('PG_ALLOWED_ADDRESSES', '0.0.0.0/0').split(',')
 	configuration.update({ 'allowed_addresses': value })
@@ -126,6 +135,12 @@ def pg_sync(host, data_directory):
 def pg_set_password(password):
 	pg_run_query('alter user postgres with password \'' + password + '\';', database = 'postgres')
 
+def pg_create_user(user, password):
+        pg_run_query('CREATE USER ' + user + ' WITH  PASSWORD \'' + password + '\';')
+
+def pg_create_db(database, user = 'postgres'):
+        run('sudo', '-u', 'postgres', 'createdb', database, '-O', user)
+
 def run(app, *args):
 	check_call([app] + list(args))
 
@@ -183,6 +198,12 @@ if __name__ == "__main__":
 		   configuration['deployment_type'] == 'replicated' and \
 		   configuration['role'] == 'master':
 			pg_set_password(configuration['password'])
+                # Create a DB
+                if configuration['dbname'] and \
+                   configuration['dbuser'] and \
+                   configuration['dbpassword']:
+                        pg_create_user(configuration['dbuser'], configuration['dbpassword'])
+                        pg_create_db(configuration['dbname'], user = configuration['dbuser'])
 		# Post startup initialization.
 		if configuration['wale_enabled']:
 			wale_init(configuration)

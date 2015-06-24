@@ -30,7 +30,7 @@ ADD conf/recovery.conf.template /usr/share/postgresql/9.3/recovery.conf.template
 
 # work around for AUFS bug
 # as per https://github.com/docker/docker/issues/783#issuecomment-56013588
-RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; rm -rf /etc/ssl/private/*; rm -r /etc/ssl/private; mv /etc/ssl/private-copy /etc/ssl/private; chmod -R 0700 /etc/ssl/private; chown -R postgres /etc/ssl/private; chown postgres /etc/ssl/private/ssl-cert-snakeoil.key; chown postgres /etc/ssl/certs/ssl-cert-snakeoil.pem
+RUN mkdir /etc/ssl/private-copy; cp /etc/ssl/private/* /etc/ssl/private-copy/; rm -rf /etc/ssl/private/*; rm -r /etc/ssl/private; mkdir /etc/ssl/private; cp /etc/ssl/private-copy/* /etc/ssl/private/; rm -rf /etc/ssl/private-copy; chmod -R 0700 /etc/ssl/private; chown -R postgres:postgres /etc/ssl/private; chown postgres /etc/ssl/private/ssl-cert-snakeoil.key
 
 # Open the container up to the world.
 EXPOSE 5432/tcp

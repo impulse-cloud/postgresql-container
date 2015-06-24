@@ -1,7 +1,7 @@
 # Ubuntu PostgreSQL.
 # Forked from https://github.com/BetterVoice/postgresql-container
 
-FROM ubuntu:14.04.2
+FROM impulsecloud/ic-ubuntu:latest
 MAINTAINER Johann du Toit <johann@impulsecloud.com.au>
 
 # Install.
@@ -15,12 +15,10 @@ RUN apt-get update && \
  postgresql-contrib-9.3 \
  postgresql-9.3-pgpool2 \
  postgresql-9.3-postgis-2.1 \
- pv \
- python \
- python-dev \
- python-pip=1.5.4-1
-RUN pip install --upgrade six
-RUN pip install Jinja2 wal-e
+ pv && \
+ pip install --upgrade six && \
+ pip install Jinja2 wal-e && \
+ apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Post Install Configuration.
 ADD bin/start-postgres /usr/bin/start-postgres
@@ -30,7 +28,9 @@ ADD conf/postgresql.conf.template /usr/share/postgresql/9.3/postgresql.conf.temp
 ADD conf/pg_hba.conf.template /usr/share/postgresql/9.3/pg_hba.conf.template
 ADD conf/recovery.conf.template /usr/share/postgresql/9.3/recovery.conf.template
 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# work around for AUFS bug
+# as per https://github.com/docker/docker/issues/783#issuecomment-56013588
+RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; rm -r /etc/ssl/private; mv /etc/ssl/private-copy /etc/ssl/private; chmod -R 0700 /etc/ssl/private; chown -R postgres /etc/ssl/private 
 
 # Open the container up to the world.
 EXPOSE 5432/tcp

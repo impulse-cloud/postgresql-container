@@ -5,7 +5,20 @@ FROM ubuntu:14.04.2
 MAINTAINER Johann du Toit <johann@impulsecloud.com.au>
 
 # Install.
-RUN apt-get update && apt-get install -y daemontools libffi-dev libssl-dev lzop postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3 postgresql-9.3-pgpool2 postgresql-9.3-postgis-2.1 pv python python-dev python-pip
+RUN apt-get update && \
+ apt-get install -y \
+ daemontools \
+ libffi-dev \
+ libssl-dev \
+ lzop postgresql-9.3 \
+ postgresql-client-9.3 \
+ postgresql-contrib-9.3 \
+ postgresql-9.3-pgpool2 \
+ postgresql-9.3-postgis-2.1 \
+ pv \
+ python \
+ python-dev \
+ python-pip=1.5.4-1
 RUN pip install --upgrade six
 RUN pip install Jinja2 wal-e
 

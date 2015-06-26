@@ -40,5 +40,8 @@ RUN mkdir -p /var/lib/postgresql/ssl ;\
 # Open the container up to the world.
 EXPOSE 5432/tcp
 
+# Allow configuration mount points
+VOLUME /etc/postgresql /var/lib/postgresql
+
 # Start PostgreSQL.
 CMD start-postgres

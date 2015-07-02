@@ -84,3 +84,8 @@ This is not meant to be in depth documentation for wal-e which is a continuous a
 *AWS is the only backend currently supported when using wal-e*
 
 **PG_WAL_E_ENABLED** - A flag to enable wal-e continuous archiving to cloud storage. (default: False)
+
+**PG_WAL_E_RESTORE** - A flag to bootstrap the database by doing a wal-e restore first. (default: False)
+
+**PG_WAL_E_INTERVAL** - The number of seconds to wait between doing a full wal-e backup. (default: 24*60*60)
+

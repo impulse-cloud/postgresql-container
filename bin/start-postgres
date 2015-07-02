@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from jinja2 import Environment, FileSystemLoader
-from subprocess import check_call
+from subprocess import check_call, Popen
 
 import grp
 import pwd
@@ -99,9 +99,15 @@ def pg_get_configuration():
 	# Get the slave heartbeat interval.
 	value = os.getenv('HEARTBEAT_INTERVAL', 5)
 	configuration.update({ 'hearbeat_interval': value })
+        # Get the wal-e restore flag.
+        value = os.getenv('PG_WAL_E_RESTORE', 'False')
+        configuration.update({ 'wale_restore': value == 'True' })
 	# Get the wal-e enabled flag.
 	value = os.getenv('PG_WAL_E_ENABLED', 'False')
 	configuration.update({ 'wale_enabled': value == 'True' })
+        # Get full backup interval.
+        value = os.getenv('PG_WAL_E_INTERVAL', 24*60*60)
+        configuration.update({ 'backup_interval': value })
 	# Get the AWS secret key.
 	value = os.getenv('AWS_SECRET_ACCESS_KEY', None)
 	configuration.update({ 'aws_secret_access_key': value })
@@ -115,6 +121,10 @@ def pg_get_configuration():
 
 def pg_base_backup(data_directory):
 	run('sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-push', data_directory)
+
+def pg_base_restore(data_directory):
+        empty(data_directory)
+        run('sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-fetch', data_directory, 'LATEST')
 
 def pg_change_data_directory(data_directory):
 	run('pg_dropcluster', '--stop', '9.3', 'main')
@@ -144,6 +154,9 @@ def pg_create_db(database, user = 'postgres'):
 def run(app, *args):
 	check_call([app] + list(args))
 
+def runbg(app, *args):
+        Popen([app] + list(args))
+
 def start(service):
 	check_call(['service', service, 'start'])
 
@@ -166,6 +179,10 @@ if __name__ == "__main__":
 	templates = Environment(loader = loader)
 	# Load the configuration into a dictionary.
 	configuration = pg_get_configuration()
+
+        if configuration['wale_enabled'] or configuration['wale_restore']:
+                wale_init(configuration)
+
 	if not configuration['initialize']:
 		start('postgresql')
 		if configuration['deployment_type'] == 'replicated' and \
@@ -174,47 +191,53 @@ if __name__ == "__main__":
 	else:
 		# Initialize the data directory.
 		pg_change_data_directory(configuration['data_directory'])
-		# Configure the slave.
-		if configuration['deployment_type'] == 'replicated' and \
-			 configuration['role'] == 'slave':
+		# Restore WAL-E backups and Configure the slave.
+		if configuration['wale_restore'] or \
+                        (configuration['deployment_type'] == 'replicated' and \
+			 configuration['role'] == 'slave'):
 			# Copy data from the master and create the recovery file.
-			pg_sync(configuration['master_host'], configuration['data_directory'])
-			recovery = templates.get_template('recovery.conf.template') \
-													.render(configuration)
+                        if configuration['wale_restore']:
+                                pg_base_restore(configuration['data_directory'])
+                        else:
+			        pg_sync(configuration['master_host'], configuration['data_directory'])
+			recovery = templates.get_template('recovery.conf.template').render(configuration)
 			write(recovery, configuration['data_directory'] + '/recovery.conf')
 			chown(configuration['data_directory'] + '/recovery.conf', 'postgres', 'postgres')
 		# Write pg_hba.conf
-		pg_hba = templates.get_template('pg_hba.conf.template') \
-											.render(configuration)
+		pg_hba = templates.get_template('pg_hba.conf.template').render(configuration)
 		write(pg_hba, '/etc/postgresql/9.3/main/pg_hba.conf')
 		# Write postgresql.conf
-		postgresql = templates.get_template('postgresql.conf.template') \
-													.render(configuration)
+		postgresql = templates.get_template('postgresql.conf.template').render(configuration)
 		write(postgresql, '/etc/postgresql/9.3/main/postgresql.conf')
 		# Start the container.
 		start('postgresql')
-		# Set the default password.
-		if configuration['deployment_type'] == 'standalone' or \
-		   configuration['deployment_type'] == 'replicated' and \
-		   configuration['role'] == 'master':
-			pg_set_password(configuration['password'])
-                # Create a DB
-                if configuration['dbname'] and \
-                   configuration['dbuser'] and \
-                   configuration['dbpassword']:
-                        pg_create_user(configuration['dbuser'], configuration['dbpassword'])
-                        pg_create_db(configuration['dbname'], user = configuration['dbuser'])
-		# Post startup initialization.
-		if configuration['wale_enabled']:
-			wale_init(configuration)
-			pg_base_backup(configuration['data_directory'])
+                if configuration['wale_restore'] == False:
+                        # Set the default password.
+                        if configuration['deployment_type'] == 'standalone' or \
+                           configuration['deployment_type'] == 'replicated' and \
+                           configuration['role'] == 'master':
+                                pg_set_password(configuration['password'])
+                        # Create a DB
+                        if configuration['dbname'] and \
+                           configuration['dbuser'] and \
+                           configuration['dbpassword']:
+                                pg_create_user(configuration['dbuser'], configuration['dbpassword'])
+                                pg_create_db(configuration['dbname'], user = configuration['dbuser'])
+                        # Post startup initialization.
+                        if configuration['wale_enabled']:
+                                pg_base_backup(configuration['data_directory'])
 		if configuration['deployment_type'] == 'replicated' and \
 			 configuration['role'] == 'slave':
-			heartbeat = templates.get_template('heartbeat.template') \
-													 .render(configuration)
+			heartbeat = templates.get_template('heartbeat.template').render(configuration)
 			write(heartbeat, '/usr/bin/heartbeat')
 			chmod('/usr/bin/heartbeat', 0755)
 			run('heartbeat')
+                if configuration['wale_enabled']:
+                        backupcron = templates.get_template('backupcron.template').render(configuration)
+                        write(backupcron, '/usr/bin/backupcron')
+                        chmod('/usr/bin/backupcron', 0755)
+                        runbg('backupcron')
+
 	# Print the log to stdout.
 	try:
 		run('tail', '-F', '/var/log/postgresql/postgresql-9.3-main.log')

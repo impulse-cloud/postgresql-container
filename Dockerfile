@@ -24,6 +24,7 @@ RUN apt-get update && \
 ADD bin/start-postgres /usr/bin/start-postgres
 RUN chmod +x /usr/bin/start-postgres
 ADD bin/heartbeat.template /usr/share/postgresql/9.3/heartbeat.template
+ADD bin/backupcron.template /usr/share/postgresql/9.3/backupcron.template
 ADD conf/postgresql.conf.template /usr/share/postgresql/9.3/postgresql.conf.template
 ADD conf/pg_hba.conf.template /usr/share/postgresql/9.3/pg_hba.conf.template
 ADD conf/recovery.conf.template /usr/share/postgresql/9.3/recovery.conf.template

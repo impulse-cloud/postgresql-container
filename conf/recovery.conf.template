@@ -1,3 +1,9 @@
+{% if role == 'slave' %}
 primary_conninfo = 'host={{ master_host }} port={{ master_host_port }} user=postgres password={{ password }}'
 trigger_file = '{{ data_directory }}/failover'
 standby_mode = 'on'
+{% endif %}
+{% if wale_restore %}
+restore_command = 'envdir /etc/wal-e.d/env /usr/local/bin/wal-e wal-fetch "%f" "%p"'
+{% endif %}
+

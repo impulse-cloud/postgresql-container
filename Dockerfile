@@ -23,6 +23,8 @@ RUN apt-get update && \
 # Post Install Configuration.
 ADD bin/start-postgres /usr/bin/start-postgres
 RUN chmod +x /usr/bin/start-postgres
+ADD bin/docker-wait /usr/bin/docker-wait
+RUN chmod +x /usr/bin/docker-wait
 ADD bin/heartbeat.template /usr/share/postgresql/9.3/heartbeat.template
 ADD bin/backupcron.template /usr/share/postgresql/9.3/backupcron.template
 ADD conf/postgresql.conf.template /usr/share/postgresql/9.3/postgresql.conf.template

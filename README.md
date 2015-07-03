@@ -33,6 +33,8 @@ To run a replicated container with wal-e support.
 
 **PG_PASSWORD** - The password for the postgres user. (default: bettervoice)
 
+**PG_ISREADY_URI** - Wait until this valid Postgres URI is accepting connections before starting the container. Useful when using docker-compose and a slave needs to wait for a master to be fully operational first. (default: None)
+
 ### Database Configuration Environment Variables
 
 **PG_INIT** - A flag to enable or disable container intialization. (default: True)

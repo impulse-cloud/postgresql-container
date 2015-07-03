@@ -180,6 +180,10 @@ if __name__ == "__main__":
 	# Load the configuration into a dictionary.
 	configuration = pg_get_configuration()
 
+        # if there are linked containers, wait until they are all up, 
+        # eg we are a slave waiting for master to come up first
+        run('docker-wait')
+
         if configuration['wale_enabled'] or configuration['wale_restore']:
                 wale_init(configuration)
 

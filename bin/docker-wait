@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+if [ -n "${PG_ISREADY_URI}" ];
+then
+  until pg_isready -d ${PG_ISREADY_URI}
+  do
+    sleep 5
+  done
+fi
+
+exit

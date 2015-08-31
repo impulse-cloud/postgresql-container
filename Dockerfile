@@ -1,7 +1,7 @@
 # Ubuntu PostgreSQL.
 # Forked from https://github.com/BetterVoice/postgresql-container
 
-FROM impulsecloud/ic-ubuntu:latest
+FROM ubuntu:14.04.3
 MAINTAINER Johann du Toit <johann@impulsecloud.com.au>
 
 # Install.

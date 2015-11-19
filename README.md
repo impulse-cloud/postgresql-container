@@ -7,23 +7,23 @@ This project can be used to deploy a PostgreSQL server inside a Docker container
 
 To run a standalone container with all the default settings.
 
-```sudo docker run --name postgresql -p 5432:5432/tcp bettervoice/postgresql:9.3```
+```sudo docker run --name postgresql -p 5432:5432/tcp bettervoice/postgresql:9.5```
 
 To run a standalone container with wal-e support.
 
-```sudo docker run --name postgresql -e PG_WAL_LEVEL=hot_standby -e PG_WAL_E_ENABLED=True -e AWS_ACCESS_KEY_ID=AWSAccessKeyId -e AWS_SECRET_ACCESS_KEY=AWSSecretKey -e WALE_S3_PREFIX=s3://bucket -p 5432:5432/tcp bettervoice/postgresql:9.3```
+```sudo docker run --name postgresql -e PG_WAL_LEVEL=hot_standby -e PG_WAL_E_ENABLED=True -e AWS_ACCESS_KEY_ID=AWSAccessKeyId -e AWS_SECRET_ACCESS_KEY=AWSSecretKey -e WALE_S3_PREFIX=s3://bucket -p 5432:5432/tcp bettervoice/postgresql:9.5```
 
 To run a replicated container.
 
-```sudo docker run --name postgresql-master -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=master -e PG_WAL_LEVEL=hot_standby -p 5432:5432/tcp bettervoice/postgresql:9.3```
+```sudo docker run --name postgresql-master -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=master -e PG_WAL_LEVEL=hot_standby -p 5432:5432/tcp bettervoice/postgresql:9.5```
 
-```sudo docker run --name postgresql-slave -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=slave -e PG_WAL_LEVEL=hot_standby -e PG_MASTER_HOST=IPAddress -p 5432:5432/tcp bettervoice/postgresql:9.3```
+```sudo docker run --name postgresql-slave -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=slave -e PG_WAL_LEVEL=hot_standby -e PG_MASTER_HOST=IPAddress -p 5432:5432/tcp bettervoice/postgresql:9.5```
 
 To run a replicated container with wal-e support.
 
-```sudo docker run --name postgresql-master -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=master -e PG_WAL_LEVEL=hot_standby -e PG_WAL_E_ENABLED=True -e AWS_ACCESS_KEY_ID=AWSAccessKeyId -e AWS_SECRET_ACCESS_KEY=AWSSecretKey -e WALE_S3_PREFIX=s3://bucket -p 5432:5432/tcp bettervoice/postgresql:9.3```
+```sudo docker run --name postgresql-master -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=master -e PG_WAL_LEVEL=hot_standby -e PG_WAL_E_ENABLED=True -e AWS_ACCESS_KEY_ID=AWSAccessKeyId -e AWS_SECRET_ACCESS_KEY=AWSSecretKey -e WALE_S3_PREFIX=s3://bucket -p 5432:5432/tcp bettervoice/postgresql:9.5```
 
-```sudo docker run --name postgresql-slave -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=slave -e PG_WAL_LEVEL=hot_standby -e PG_MASTER_HOST=IPAddress -p 5432:5432/tcp bettervoice/postgresql:9.3```
+```sudo docker run --name postgresql-slave -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=slave -e PG_WAL_LEVEL=hot_standby -e PG_MASTER_HOST=IPAddress -p 5432:5432/tcp bettervoice/postgresql:9.5```
 
 ### Deployment Environment Variables
 
@@ -49,11 +49,11 @@ To run a replicated container with wal-e support.
 
 **PG_SHARED_BUFFERS** - Sets the amount of memory the database server uses for shared memory buffers in megabytes. (default: 128)
 
-**PG_DATA_DIRECTORY** - Specifies the directory to use for data storage. (default: /var/lib/postgresql/9.3/main)
+**PG_DATA_DIRECTORY** - Specifies the directory to use for data storage. (default: /var/lib/postgresql/9.5/main)
 
 **PG_WAL_LEVEL** - Determines how much information is written to the WAL. (default: minimal)
 
-**PG_CHECKPOINT_SEGMENTS** - Maximum number of log file segments between automatic WAL checkpoints (each segment is normally 16 megabytes). (default: 32)
+**PG_MAX_WAL_SIZE** - Maximum size to let the WAL grow to between automatic WAL checkpoints. This is a soft limit; WAL size can exceed max_wal_size under special circumstances, like under heavy load, a failing archive_command, or a high wal_keep_segments setting. (default: 1GB)
 
 **PG_MAX_WAL_SENDERS** - Specifies the maximum number of concurrent connections from standby servers or streaming base backup clients. (default: 3)
 
@@ -89,5 +89,5 @@ This is not meant to be in depth documentation for wal-e which is a continuous a
 
 **PG_WAL_E_RESTORE** - A flag to bootstrap the database by doing a wal-e restore first. (default: False)
 
-**PG_WAL_E_INTERVAL** - The number of seconds to wait between doing a full wal-e backup. (default: 24*60*60)
+**PG_WAL_E_INTERVAL** - The number of seconds to wait between doing a full wal-e backup. (default: 24x60x60)
 

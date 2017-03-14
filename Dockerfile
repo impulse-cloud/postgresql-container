@@ -5,7 +5,7 @@ FROM impulsecloud/ic-ubuntu:latest
 MAINTAINER Johann du Toit <johann@winkreports.com>
 
 # Install.
-RUN add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" && \
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > /etc/apt/sources.list.d/pgdg.list && \
  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && \
  apt-get update && \
  apt-get install -y \

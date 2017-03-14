@@ -49,4 +49,4 @@ EXPOSE 5432/tcp
 VOLUME /etc/postgresql /var/lib/postgresql
 
 # Start PostgreSQL.
-CMD start-postgres
+CMD /usr/bin/start-postgres

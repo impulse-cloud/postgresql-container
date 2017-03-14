@@ -7,23 +7,23 @@ This project can be used to deploy a PostgreSQL server inside a Docker container
 
 To run a standalone container with all the default settings.
 
-```sudo docker run --name postgresql -p 5432:5432/tcp bettervoice/postgresql:9.5```
+```sudo docker run --name postgresql -p 5432:5432/tcp bettervoice/postgresql:9.6```
 
 To run a standalone container with wal-e support.
 
-```sudo docker run --name postgresql -e PG_WAL_LEVEL=hot_standby -e PG_WAL_E_ENABLED=True -e AWS_ACCESS_KEY_ID=AWSAccessKeyId -e AWS_SECRET_ACCESS_KEY=AWSSecretKey -e WALE_S3_PREFIX=s3://bucket -p 5432:5432/tcp bettervoice/postgresql:9.5```
+```sudo docker run --name postgresql -e PG_WAL_LEVEL=hot_standby -e PG_WAL_E_ENABLED=True -e AWS_ACCESS_KEY_ID=AWSAccessKeyId -e AWS_SECRET_ACCESS_KEY=AWSSecretKey -e WALE_S3_PREFIX=s3://bucket -p 5432:5432/tcp bettervoice/postgresql:9.6```
 
 To run a replicated container.
 
-```sudo docker run --name postgresql-master -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=master -e PG_WAL_LEVEL=hot_standby -p 5432:5432/tcp bettervoice/postgresql:9.5```
+```sudo docker run --name postgresql-master -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=master -e PG_WAL_LEVEL=hot_standby -p 5432:5432/tcp bettervoice/postgresql:9.6```
 
-```sudo docker run --name postgresql-slave -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=slave -e PG_WAL_LEVEL=hot_standby -e PG_MASTER_HOST=IPAddress -p 5432:5432/tcp bettervoice/postgresql:9.5```
+```sudo docker run --name postgresql-slave -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=slave -e PG_WAL_LEVEL=hot_standby -e PG_MASTER_HOST=IPAddress -p 5432:5432/tcp bettervoice/postgresql:9.6```
 
 To run a replicated container with wal-e support.
 
-```sudo docker run --name postgresql-master -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=master -e PG_WAL_LEVEL=hot_standby -e PG_WAL_E_ENABLED=True -e AWS_ACCESS_KEY_ID=AWSAccessKeyId -e AWS_SECRET_ACCESS_KEY=AWSSecretKey -e WALE_S3_PREFIX=s3://bucket -p 5432:5432/tcp bettervoice/postgresql:9.5```
+```sudo docker run --name postgresql-master -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=master -e PG_WAL_LEVEL=hot_standby -e PG_WAL_E_ENABLED=True -e AWS_ACCESS_KEY_ID=AWSAccessKeyId -e AWS_SECRET_ACCESS_KEY=AWSSecretKey -e WALE_S3_PREFIX=s3://bucket -p 5432:5432/tcp bettervoice/postgresql:9.6```
 
-```sudo docker run --name postgresql-slave -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=slave -e PG_WAL_LEVEL=hot_standby -e PG_MASTER_HOST=IPAddress -p 5432:5432/tcp bettervoice/postgresql:9.5```
+```sudo docker run --name postgresql-slave -e PG_DEPLOYMENT_TYPE=replicated -e PG_ROLE=slave -e PG_WAL_LEVEL=hot_standby -e PG_MASTER_HOST=IPAddress -p 5432:5432/tcp bettervoice/postgresql:9.6```
 
 ### Deployment Environment Variables
 
@@ -49,7 +49,7 @@ To run a replicated container with wal-e support.
 
 **PG_SHARED_BUFFERS** - Sets the amount of memory the database server uses for shared memory buffers in megabytes. (default: 128)
 
-**PG_DATA_DIRECTORY** - Specifies the directory to use for data storage. (default: /var/lib/postgresql/9.5/main)
+**PG_DATA_DIRECTORY** - Specifies the directory to use for data storage. (default: /var/lib/postgresql/9.6/main)
 
 **PG_WAL_LEVEL** - Determines how much information is written to the WAL. (default: minimal)
 

@@ -64,7 +64,7 @@ def pg_get_configuration():
 	value = os.getenv('PG_ALLOWED_ADDRESSES', '0.0.0.0/0').split(',')
 	configuration.update({ 'allowed_addresses': value })
 	# Get the database data directory.
-	value = os.getenv('PG_DATA_DIRECTORY', '/var/lib/postgresql/9.5/main')
+	value = os.getenv('PG_DATA_DIRECTORY', '/var/lib/postgresql/9.6/main')
 	configuration.update({ 'data_directory': value })
 	# Get the maximum number of connections allowed to the db.
 	value = os.getenv('PG_MAX_CONNECTIONS', 100)
@@ -127,8 +127,8 @@ def pg_base_restore(data_directory):
         run('sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-fetch', data_directory, 'LATEST')
 
 def pg_change_data_directory(data_directory):
-	run('pg_dropcluster', '--stop', '9.5', 'main')
-	run('pg_createcluster', '-d', data_directory, '9.5', 'main')
+	run('pg_dropcluster', '--stop', '9.6', 'main')
+	run('pg_createcluster', '-d', data_directory, '9.6', 'main')
 	chown(data_directory, 'postgres', 'postgres')
 
 def pg_run_query(query, database = None):
@@ -175,7 +175,7 @@ def write(template, path):
 
 if __name__ == "__main__":
 	# Initialize Jinja2
-	loader = FileSystemLoader('/usr/share/postgresql/9.5')
+	loader = FileSystemLoader('/usr/share/postgresql/9.6')
 	templates = Environment(loader = loader)
 	# Load the configuration into a dictionary.
 	configuration = pg_get_configuration()
@@ -209,10 +209,10 @@ if __name__ == "__main__":
 			chown(configuration['data_directory'] + '/recovery.conf', 'postgres', 'postgres')
 		# Write pg_hba.conf
 		pg_hba = templates.get_template('pg_hba.conf.template').render(configuration)
-		write(pg_hba, '/etc/postgresql/9.5/main/pg_hba.conf')
+		write(pg_hba, '/etc/postgresql/9.6/main/pg_hba.conf')
 		# Write postgresql.conf
 		postgresql = templates.get_template('postgresql.conf.template').render(configuration)
-		write(postgresql, '/etc/postgresql/9.5/main/postgresql.conf')
+		write(postgresql, '/etc/postgresql/9.6/main/postgresql.conf')
 		# Start the container.
 		start('postgresql')
                 if configuration['wale_restore'] == False:
@@ -244,6 +244,6 @@ if __name__ == "__main__":
 
 	# Print the log to stdout.
 	try:
-		run('tail', '-F', '/var/log/postgresql/postgresql-9.5-main.log')
+		run('tail', '-F', '/var/log/postgresql/postgresql-9.6-main.log')
 	except KeyboardInterrupt:
 		print 'Exiting...'

@@ -27,30 +27,30 @@ def chown(path, user, group):
   os.chown(path, uid, gid)
 
 def empty(directory):
-	for file in os.listdir(directory):
-		path = os.path.join(directory, file)
-		try:
-			if os.path.isfile(path):
-				os.unlink(path)
-			elif os.path.isdir(path):
-				shutil.rmtree(path)
-		except Exception as exception:
-			print exception
+        for file in os.listdir(directory):
+                path = os.path.join(directory, file)
+                try:
+                        if os.path.isfile(path):
+                                os.unlink(path)
+                        elif os.path.isdir(path):
+                                shutil.rmtree(path)
+                except Exception as exception:
+                        print(exception)
 
 def pg_get_configuration():
-	configuration = { }
-	# Get the initialization flag.
-	value = os.getenv('PG_INIT', 'True')
-	configuration.update({ 'initialize': value == 'True' })
-	# Get the deployment type.
-	value = os.getenv('PG_DEPLOYMENT_TYPE', 'standalone')
-	configuration.update({ 'deployment_type': value })
-	# Get the container role.
-	value = os.getenv('PG_ROLE', 'master')
-	configuration.update({ 'role': value })
-	# Get the postgres user password.
-	value = os.getenv('PG_PASSWORD', 'bettervoice')
-	configuration.update({ 'password': value })
+        configuration = { }
+        # Get the initialization flag.
+        value = os.getenv('PG_INIT', 'True')
+        configuration.update({ 'initialize': value == 'True' })
+        # Get the deployment type.
+        value = os.getenv('PG_DEPLOYMENT_TYPE', 'standalone')
+        configuration.update({ 'deployment_type': value })
+        # Get the container role.
+        value = os.getenv('PG_ROLE', 'master')
+        configuration.update({ 'role': value })
+        # Get the postgres user password.
+        value = os.getenv('PG_PASSWORD', 'bettervoice')
+        configuration.update({ 'password': value })
         # Get the db to create.
         value = os.getenv('PG_DBNAME', None)
         configuration.update({ 'dbname': value })
@@ -60,90 +60,132 @@ def pg_get_configuration():
         # Get the db password to create.
         value = os.getenv('PG_DBPASSWORD', None)
         configuration.update({ 'dbpassword': value })
-	# Get the IP addresses that are allowed to connect to the db.
-	value = os.getenv('PG_ALLOWED_ADDRESSES', '0.0.0.0/0').split(',')
-	configuration.update({ 'allowed_addresses': value })
-	# Get the database data directory.
-	value = os.getenv('PG_DATA_DIRECTORY', '/var/lib/postgresql/9.5/main')
-	configuration.update({ 'data_directory': value })
-	# Get the maximum number of connections allowed to the db.
-	value = os.getenv('PG_MAX_CONNECTIONS', 100)
-	configuration.update({ 'max_connections': value })
-	# Get the port number for the db to listen on.
-	value = os.getenv('PG_PORT', 5432)
-	configuration.update({ 'port': value })
-	# Get the database share buffers size.
-	value = os.getenv('PG_SHARED_BUFFERS', '128')
-	configuration.update({ 'shared_buffers': value })
-	# Get the database write ahead log level.
-	value = os.getenv('PG_WAL_LEVEL', 'minimal')
-	configuration.update({ 'wal_level': value })
+        # Get the IP addresses that the server should bind to and listen on.
+        value = os.getenv('PG_LISTEN_ADDRESSES', '*')
+        configuration.update({ 'listen_addresses': value })
+        # Get the IP addresses that are allowed to connect to the db.
+        value = os.getenv('PG_ALLOWED_ADDRESSES', '0.0.0.0/0').split(',')
+        configuration.update({ 'allowed_addresses': value })
+        # Get the database data directory.
+        value = os.getenv('PG_DATA_DIRECTORY', '/var/lib/postgresql/9.5/main')
+        configuration.update({ 'data_directory': value })
+        # Get the maximum number of connections allowed to the db.
+        value = os.getenv('PG_MAX_CONNECTIONS', 100)
+        configuration.update({ 'max_connections': value })
+        # Get the port number for the db to listen on.
+        value = os.getenv('PG_PORT', 5432)
+        configuration.update({ 'port': value })
+        # Get the database share buffers size.
+        value = os.getenv('PG_SHARED_BUFFERS', '128MB')
+        configuration.update({ 'shared_buffers': value })
+        # Get the database effective cache size.
+        value = os.getenv('PG_EFFECTIVE_CACHE_SIZE', '128MB')
+        configuration.update({ 'effective_cache_size': value })
+        # Get the database working memory.
+        value = os.getenv('PG_WORK_MEM', '1MB')
+        configuration.update({ 'work_mem': value })
+        # Get the database maintenance working memory.
+        value = os.getenv('PG_MAINTENANCE_WORK_MEM', '16MB')
+        configuration.update({ 'maintenance_work_mem': value })
+        # Checkpoint completion Target
+        value = os.getenv('PG_CHECKPOINT_COMPLETION_TARGET', 0.5)
+        configuration.update({ 'checkpoint_completion_target': value })
+        # Default Statistics Target
+        value = os.getenv('PG_DEFAULT_STATISTICS_TARGET', 100)
+        configuration.update({ 'default_statistics_target': value })
+        # CPU Tuple Cost
+        value = os.getenv('PG_CPU_TUPLE_COST', 0.01)
+        configuration.update({ 'cpu_tuple_cost': value })
+        # CPU Index Tuple Cost
+        value = os.getenv('PG_CPU_INDEX_TUPLE_COST', 0.005)
+        configuration.update({ 'cpu_index_tuple_cost': value })
+        # CPU Operator Cost
+        value = os.getenv('PG_CPU_OPERATOR_COST', 0.0025)
+        configuration.update({ 'cpu_operator_cost': value })
+        # Random Page Cost
+        value = os.getenv('PG_RANDOM_PAGE_COST', 4.0)
+        configuration.update({ 'random_page_cost': value })
+        # Log SQL statements which take longer than this in ms
+        value = os.getenv('PG_LOG_MIN_DURATION_STATEMENT', -1)
+        configuration.update({ 'log_min_duration_statement': value })
+        # Get the database write ahead log level.
+        value = os.getenv('PG_WAL_LEVEL', 'minimal')
+        configuration.update({ 'wal_level': value })
+        # Get the minimum size to let the WAL grow to between automatic checkpoints.
+        value = os.getenv('PG_MIN_WAL_SIZE', '80MB')
+        configuration.update({ 'min_wal_size': value })
         # Get the maximim size to let the WAL grow to between automatic checkpoints.
         value = os.getenv('PG_MAX_WAL_SIZE', '1GB')
         configuration.update({ 'max_wal_size': value })
-	# Get the number of write ahead log senders.
-	value = os.getenv('PG_MAX_WAL_SENDERS', 3)
-	configuration.update({ 'max_wal_senders': value })
-	# Get the number of write ahead log segments to keep around for replication.
-	value = os.getenv('PG_WAL_KEEP_SEGMENTS', 8)
-	configuration.update({ 'wal_keep_segments': value })
-	# Get the master host for replication.
-	value = os.getenv('PG_MASTER_HOST', None)
-	configuration.update({ 'master_host': value })
-	# Get the master host for replication.
-	value = os.getenv('PG_MASTER_HOST_PORT', 5432)
-	configuration.update({ 'master_host_port': value })
-	# Get the IP addresses for slaves.
-	value = os.getenv('PG_SLAVES', '0.0.0.0/0').split(',')
-	configuration.update({ 'slaves': value })
-	# Get the slave heartbeat interval.
-	value = os.getenv('HEARTBEAT_INTERVAL', 5)
-	configuration.update({ 'hearbeat_interval': value })
+        # Get the number of write ahead log senders.
+        value = os.getenv('PG_MAX_WAL_SENDERS', 3)
+        configuration.update({ 'max_wal_senders': value })
+        # Get the number of write ahead log segments to keep around for replication.
+        value = os.getenv('PG_WAL_KEEP_SEGMENTS', 8)
+        configuration.update({ 'wal_keep_segments': value })
+        # Get the size of the wal buffers
+        value = os.getenv('PG_WAL_BUFFERS', -1)
+        configuration.update({ 'wal_buffers': value })
+        # Get the master host for replication.
+        value = os.getenv('PG_MASTER_HOST', None)
+        configuration.update({ 'master_host': value })
+        # Get the master host for replication.
+        value = os.getenv('PG_MASTER_HOST_PORT', 5432)
+        configuration.update({ 'master_host_port': value })
+        # Get the IP addresses for slaves.
+        value = os.getenv('PG_SLAVES', '0.0.0.0/0').split(',')
+        configuration.update({ 'slaves': value })
+        # Get the slave heartbeat interval.
+        value = os.getenv('HEARTBEAT_INTERVAL', 5)
+        configuration.update({ 'hearbeat_interval': value })
         # Get the wal-e restore flag.
         value = os.getenv('PG_WAL_E_RESTORE', 'False')
         configuration.update({ 'wale_restore': value == 'True' })
-	# Get the wal-e enabled flag.
-	value = os.getenv('PG_WAL_E_ENABLED', 'False')
-	configuration.update({ 'wale_enabled': value == 'True' })
+        # Get the wal-e enabled flag.
+        value = os.getenv('PG_WAL_E_ENABLED', 'False')
+        configuration.update({ 'wale_enabled': value == 'True' })
         # Get full backup interval.
         value = os.getenv('PG_WAL_E_INTERVAL', 24*60*60)
         configuration.update({ 'backup_interval': value })
-	# Get the AWS secret key.
-	value = os.getenv('AWS_SECRET_ACCESS_KEY', None)
-	configuration.update({ 'aws_secret_access_key': value })
-	# Get the AWS access key.
-	value = os.getenv('AWS_ACCESS_KEY_ID', None)
-	configuration.update({ 'aws_access_key_id': value })
-	# Get the wal-e S3 prefix.
-	value = os.getenv('WALE_S3_PREFIX', None)
-	configuration.update({ 'wale_s3_prefix': value })
-	return configuration
+        # Get the AWS secret key.
+        value = os.getenv('AWS_SECRET_ACCESS_KEY', None)
+        configuration.update({ 'aws_secret_access_key': value })
+        # Get the AWS access key.
+        value = os.getenv('AWS_ACCESS_KEY_ID', None)
+        configuration.update({ 'aws_access_key_id': value })
+        # Get the AWS region.
+        value = os.getenv('AWS_REGION', 'us-east-1')
+        configuration.update({ 'aws_region': value })
+        # Get the wal-e S3 prefix.
+        value = os.getenv('WALE_S3_PREFIX', None)
+        configuration.update({ 'wale_s3_prefix': value })
+        return configuration
 
 def pg_base_backup(data_directory):
-	run('sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-push', data_directory)
+        run('sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-push', data_directory)
 
 def pg_base_restore(data_directory):
         empty(data_directory)
         run('sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-fetch', data_directory, 'LATEST')
 
 def pg_change_data_directory(data_directory):
-	run('pg_dropcluster', '--stop', '9.5', 'main')
-	run('pg_createcluster', '-d', data_directory, '9.5', 'main')
-	chown(data_directory, 'postgres', 'postgres')
+        run('pg_dropcluster', '--stop', '9.5', 'main')
+        run('pg_createcluster', '-d', data_directory, '9.5', 'main')
+        chown(data_directory, 'postgres', 'postgres')
 
 def pg_run_query(query, database = None):
-	if database:
-		run('sudo', '-u', 'postgres', 'psql', '-U', 'postgres', '-d', database, '-c', query)
-	else:
-		run('sudo', '-u', 'postgres', 'psql', '-U', 'postgres', '-c', query)
+        if database:
+                run('sudo', '-u', 'postgres', 'psql', '-U', 'postgres', '-d', database, '-c', query)
+        else:
+                run('sudo', '-u', 'postgres', 'psql', '-U', 'postgres', '-c', query)
 
 def pg_sync(host, data_directory):
-	empty(data_directory)
-	run('pg_basebackup', '-h', host, '-D', data_directory, '-U', 'postgres', '-v', '-x')
-	chown(data_directory, 'postgres', 'postgres')
+        empty(data_directory)
+        run('pg_basebackup', '-h', host, '-D', data_directory, '-U', 'postgres', '-v', '-x')
+        chown(data_directory, 'postgres', 'postgres')
 
 def pg_set_password(password):
-	pg_run_query('alter user postgres with password \'' + password + '\';', database = 'postgres')
+        pg_run_query('alter user postgres with password \'' + password + '\';', database = 'postgres')
 
 def pg_create_user(user, password):
         pg_run_query('CREATE USER ' + user + ' WITH  PASSWORD \'' + password + '\';')
@@ -152,33 +194,34 @@ def pg_create_db(database, user = 'postgres'):
         run('sudo', '-u', 'postgres', 'createdb', database, '-O', user)
 
 def run(app, *args):
-	check_call([app] + list(args))
+        check_call([app] + list(args))
 
 def runbg(app, *args):
         Popen([app] + list(args))
 
 def start(service):
-	check_call(['service', service, 'start'])
+        check_call(['service', service, 'start'])
 
 def wale_init(configuration):
-	wale_configuration_dir = '/etc/wal-e.d/env'
-	if not os.path.exists(wale_configuration_dir):
-		os.makedirs(wale_configuration_dir)
-	write(configuration['aws_secret_access_key'], wale_configuration_dir + '/AWS_SECRET_ACCESS_KEY')
-	write(configuration['aws_access_key_id'], wale_configuration_dir + '/AWS_ACCESS_KEY_ID')
-	write(configuration['wale_s3_prefix'], wale_configuration_dir + '/WALE_S3_PREFIX')
-	chown(wale_configuration_dir, 'root', 'postgres')
+        wale_configuration_dir = '/etc/wal-e.d/env'
+        if not os.path.exists(wale_configuration_dir):
+                os.makedirs(wale_configuration_dir)
+        write(configuration['aws_secret_access_key'], wale_configuration_dir + '/AWS_SECRET_ACCESS_KEY')
+        write(configuration['aws_access_key_id'], wale_configuration_dir + '/AWS_ACCESS_KEY_ID')
+        write(configuration['wale_s3_prefix'], wale_configuration_dir + '/WALE_S3_PREFIX')
+        write(configuration['aws_region'], wale_configuration_dir + '/AWS_REGION')
+        chown(wale_configuration_dir, 'root', 'postgres')
 
 def write(template, path):
-	with open(path, "wb") as output:
-		output.write(template)
+        with open(path, "w") as output:
+                output.write(template)
 
 if __name__ == "__main__":
-	# Initialize Jinja2
-	loader = FileSystemLoader('/usr/share/postgresql/9.5')
-	templates = Environment(loader = loader)
-	# Load the configuration into a dictionary.
-	configuration = pg_get_configuration()
+        # Initialize Jinja2
+        loader = FileSystemLoader('/usr/share/postgresql/9.5')
+        templates = Environment(loader = loader)
+        # Load the configuration into a dictionary.
+        configuration = pg_get_configuration()
 
         # if there are linked containers, wait until they are all up, 
         # eg we are a slave waiting for master to come up first
@@ -187,34 +230,34 @@ if __name__ == "__main__":
         if configuration['wale_enabled'] or configuration['wale_restore']:
                 wale_init(configuration)
 
-	if not configuration['initialize']:
-		start('postgresql')
-		if configuration['deployment_type'] == 'replicated' and \
-			 configuration['role'] == 'slave':
-			run('heartbeat')
-	else:
-		# Initialize the data directory.
-		pg_change_data_directory(configuration['data_directory'])
-		# Restore WAL-E backups and Configure the slave.
-		if configuration['wale_restore'] or \
+        if not configuration['initialize']:
+                start('postgresql')
+                if configuration['deployment_type'] == 'replicated' and \
+                         configuration['role'] == 'slave':
+                        run('heartbeat')
+        else:
+                # Initialize the data directory.
+                pg_change_data_directory(configuration['data_directory'])
+                # Restore WAL-E backups and Configure the slave.
+                if configuration['wale_restore'] or \
                         (configuration['deployment_type'] == 'replicated' and \
-			 configuration['role'] == 'slave'):
-			# Copy data from the master and create the recovery file.
+                         configuration['role'] == 'slave'):
+                        recovery = templates.get_template('recovery.conf.template').render(configuration)
+                        write(recovery, configuration['data_directory'] + '/recovery.conf')
+                        chown(configuration['data_directory'] + '/recovery.conf', 'postgres', 'postgres')
+                        # Copy data from the master and create the recovery file.
                         if configuration['wale_restore']:
                                 pg_base_restore(configuration['data_directory'])
                         else:
-			        pg_sync(configuration['master_host'], configuration['data_directory'])
-			recovery = templates.get_template('recovery.conf.template').render(configuration)
-			write(recovery, configuration['data_directory'] + '/recovery.conf')
-			chown(configuration['data_directory'] + '/recovery.conf', 'postgres', 'postgres')
-		# Write pg_hba.conf
-		pg_hba = templates.get_template('pg_hba.conf.template').render(configuration)
-		write(pg_hba, '/etc/postgresql/9.5/main/pg_hba.conf')
-		# Write postgresql.conf
-		postgresql = templates.get_template('postgresql.conf.template').render(configuration)
-		write(postgresql, '/etc/postgresql/9.5/main/postgresql.conf')
-		# Start the container.
-		start('postgresql')
+                                pg_sync(configuration['master_host'], configuration['data_directory'])
+                # Write pg_hba.conf
+                pg_hba = templates.get_template('pg_hba.conf.template').render(configuration)
+                write(pg_hba, '/etc/postgresql/9.5/main/pg_hba.conf')
+                # Write postgresql.conf
+                postgresql = templates.get_template('postgresql.conf.template').render(configuration)
+                write(postgresql, '/etc/postgresql/9.5/main/postgresql.conf')
+                # Start the container.
+                start('postgresql')
                 if configuration['wale_restore'] == False:
                         # Set the default password.
                         if configuration['deployment_type'] == 'standalone' or \
@@ -230,20 +273,20 @@ if __name__ == "__main__":
                         # Post startup initialization.
                         if configuration['wale_enabled']:
                                 pg_base_backup(configuration['data_directory'])
-		if configuration['deployment_type'] == 'replicated' and \
-			 configuration['role'] == 'slave':
-			heartbeat = templates.get_template('heartbeat.template').render(configuration)
-			write(heartbeat, '/usr/bin/heartbeat')
-			chmod('/usr/bin/heartbeat', 0755)
-			run('heartbeat')
+                if configuration['deployment_type'] == 'replicated' and \
+                         configuration['role'] == 'slave':
+                        heartbeat = templates.get_template('heartbeat.template').render(configuration)
+                        write(heartbeat, '/usr/bin/heartbeat')
+                        chmod('/usr/bin/heartbeat', 0o755)
+                        run('heartbeat')
                 if configuration['wale_enabled']:
                         backupcron = templates.get_template('backupcron.template').render(configuration)
                         write(backupcron, '/usr/bin/backupcron')
-                        chmod('/usr/bin/backupcron', 0755)
+                        chmod('/usr/bin/backupcron', 0o755)
                         runbg('backupcron')
 
-	# Print the log to stdout.
-	try:
-		run('tail', '-F', '/var/log/postgresql/postgresql-9.5-main.log')
-	except KeyboardInterrupt:
-		print 'Exiting...'
+        # Print the log to stdout.
+        try:
+                run('tail', '-F', '/var/log/postgresql/postgresql-9.5-main.log')
+        except KeyboardInterrupt:
+                print('Exiting...')

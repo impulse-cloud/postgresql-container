@@ -56,7 +56,7 @@ external_pid_file = '/var/run/postgresql/9.5-main.pid'			# write an extra PID fi
 
 # - Connection Settings -
 
-listen_addresses = '*'		# what IP address(es) to listen on;
+listen_addresses = '{{ listen_addresses }}'		# what IP address(es) to listen on;
 					# comma-separated list of addresses;
 					# defaults to 'localhost'; use '*' for all
 					# (change requires restart)
@@ -111,7 +111,7 @@ ssl_key_file = '/var/lib/postgresql/ssl/ssl-cert-snakeoil.key'		# (change requir
 
 # - Memory -
 
-shared_buffers = {{ shared_buffers }}MB			# min 128kB
+shared_buffers = {{ shared_buffers }}			# min 128kB
 					# (change requires restart)
 #temp_buffers = 8MB			# min 800kB
 #max_prepared_transactions = 0		# zero disables the feature
@@ -120,8 +120,8 @@ shared_buffers = {{ shared_buffers }}MB			# min 128kB
 # per transaction slot, plus lock space (see max_locks_per_transaction).
 # It is not advisable to set max_prepared_transactions nonzero unless you
 # actively intend to use prepared transactions.
-#work_mem = 1MB				# min 64kB
-#maintenance_work_mem = 16MB		# min 1MB
+work_mem = {{ work_mem }}				# min 64kB
+maintenance_work_mem = {{ maintenance_work_mem }}		# min 1MB
 #max_stack_depth = 2MB			# min 100kB
 
 # - Disk -
@@ -163,6 +163,7 @@ shared_buffers = {{ shared_buffers }}MB			# min 128kB
 wal_level = {{ wal_level }}			# minimal, archive, or hot_standby
 					# (change requires restart)
 fsync = on				# turns forced synchronization on or off
+
 synchronous_commit = on		# synchronization level;
 					# off, local, remote_write, or on
 #wal_sync_method = fsync		# the default is the first option
@@ -173,7 +174,7 @@ synchronous_commit = on		# synchronization level;
 					#   fsync_writethrough
 					#   open_sync
 #full_page_writes = on			# recover from partial page writes
-#wal_buffers = -1			# min 32kB, -1 sets based on shared_buffers
+wal_buffers = {{ wal_buffers }}			# min 32kB, -1 sets based on shared_buffers
 					# (change requires restart)
 #wal_writer_delay = 200ms		# 1-10000 milliseconds
 
@@ -182,9 +183,10 @@ synchronous_commit = on		# synchronization level;
 
 # - Checkpoints -
 
+min_wal_size = {{ min_wal_size }}
 max_wal_size = {{ max_wal_size }}
 #checkpoint_timeout = 5min		# range 30s-1h
-#checkpoint_completion_target = 0.5	# checkpoint target duration, 0.0 - 1.0
+checkpoint_completion_target = {{ checkpoint_completion_target }}	# checkpoint target duration, 0.0 - 1.0
 #checkpoint_warning = 30s		# 0 disables
 
 # - Archiving -
@@ -282,11 +284,11 @@ hot_standby = on			# "on" allows queries during recovery
 # - Planner Cost Constants -
 
 #seq_page_cost = 1.0			# measured on an arbitrary scale
-#random_page_cost = 4.0			# same scale as above
-#cpu_tuple_cost = 0.01			# same scale as above
-#cpu_index_tuple_cost = 0.005		# same scale as above
-#cpu_operator_cost = 0.0025		# same scale as above
-#effective_cache_size = 128MB
+random_page_cost = {{ random_page_cost }}			# same scale as above
+cpu_tuple_cost = {{ cpu_tuple_cost }}			# same scale as above
+cpu_index_tuple_cost = {{ cpu_index_tuple_cost }}		# same scale as above
+cpu_operator_cost = {{ cpu_operator_cost }}		# same scale as above
+effective_cache_size = {{ effective_cache_size }}
 
 # - Genetic Query Optimizer -
 
@@ -300,7 +302,7 @@ hot_standby = on			# "on" allows queries during recovery
 
 # - Other Planner Options -
 
-#default_statistics_target = 100	# range 1-10000
+default_statistics_target = {{ default_statistics_target }}	# range 1-10000
 #constraint_exclusion = partition	# on, off, or partition
 #cursor_tuple_fraction = 0.1		# range 0.0-1.0
 #from_collapse_limit = 8
@@ -394,7 +396,7 @@ hot_standby = on			# "on" allows queries during recovery
 					#   fatal
 					#   panic (effectively off)
 
-#log_min_duration_statement = -1	# -1 is disabled, 0 logs all statements
+log_min_duration_statement = {{ log_min_duration_statement }}	# -1 is disabled, 0 logs all statements
 					# and their durations, > 0 logs only
 					# statements running at least this number
 					# of milliseconds

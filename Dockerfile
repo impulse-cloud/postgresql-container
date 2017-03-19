@@ -18,7 +18,7 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > /etc/
  pv \
  sudo && \
  pip3 install --upgrade six && \
- pip3 install Jinja2 wal-e && \
+ pip3 install Jinja2 wal-e boto && \
  apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Post Install Configuration.

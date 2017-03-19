@@ -153,6 +153,9 @@ def pg_get_configuration():
         # Get the AWS access key.
         value = os.getenv('AWS_ACCESS_KEY_ID', None)
         configuration.update({ 'aws_access_key_id': value })
+        # Get the AWS region.
+        value = os.getenv('AWS_REGION', 'us-east-1')
+        configuration.update({ 'aws_region': value })
         # Get the wal-e S3 prefix.
         value = os.getenv('WALE_S3_PREFIX', None)
         configuration.update({ 'wale_s3_prefix': value })
@@ -206,7 +209,7 @@ def wale_init(configuration):
         write(configuration['aws_secret_access_key'], wale_configuration_dir + '/AWS_SECRET_ACCESS_KEY')
         write(configuration['aws_access_key_id'], wale_configuration_dir + '/AWS_ACCESS_KEY_ID')
         write(configuration['wale_s3_prefix'], wale_configuration_dir + '/WALE_S3_PREFIX')
-        write('us-west-2', wale_configuration_dir + '/AWS_REGION')
+        write(configuration['aws_region'], wale_configuration_dir + '/AWS_REGION')
         chown(wale_configuration_dir, 'root', 'postgres')
 
 def write(template, path):

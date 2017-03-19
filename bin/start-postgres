@@ -206,6 +206,7 @@ def wale_init(configuration):
         write(configuration['aws_secret_access_key'], wale_configuration_dir + '/AWS_SECRET_ACCESS_KEY')
         write(configuration['aws_access_key_id'], wale_configuration_dir + '/AWS_ACCESS_KEY_ID')
         write(configuration['wale_s3_prefix'], wale_configuration_dir + '/WALE_S3_PREFIX')
+        write('us-west-2', wale_configuration_dir + '/AWS_REGION')
         chown(wale_configuration_dir, 'root', 'postgres')
 
 def write(template, path):

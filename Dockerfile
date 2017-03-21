@@ -13,16 +13,25 @@ RUN /usr/bin/apt.postgresql.org.sh && \
  apt-get update && \
  apt-get install -y \
  daemontools \
+ iputils-ping \
  libffi-dev \
  libssl-dev \
  lzop postgresql-9.5 \
  postgresql-client-9.5 \
  postgresql-contrib-9.5 \
+ python-pip \
+ python-setuptools \
  pv \
  sudo && \
+ locale-gen en_US.UTF-8 && \
  pip install --upgrade six && \
  pip install Jinja2 'boto==2.39.0' 'wal-e==0.8.1' && \
  apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Set the locale
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 # Post Install Configuration.
 ADD bin/start-postgres /usr/bin/start-postgres

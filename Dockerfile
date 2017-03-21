@@ -1,7 +1,7 @@
 # Ubuntu PostgreSQL.
 # Forked from https://github.com/BetterVoice/postgresql-container
 
-FROM impulsecloud/ic-ubuntu:latest
+FROM ubuntu:15.10
 MAINTAINER Johann du Toit <johann@impulsecloud.com.au>
 
 # Set up posgres apt repository
@@ -21,7 +21,7 @@ RUN /usr/bin/apt.postgresql.org.sh && \
  pv \
  sudo && \
  pip install --upgrade six && \
- pip install Jinja2 wal-e && \
+ pip install Jinja2 'boto==2.39.0' 'wal-e==0.8.1' && \
  apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Post Install Configuration.

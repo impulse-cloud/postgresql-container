@@ -12,6 +12,7 @@ RUN chmod +x /usr/bin/apt.postgresql.org.sh
 RUN /usr/bin/apt.postgresql.org.sh && \
  apt-get update && \
  apt-get install -y \
+ build-essential \
  daemontools \
  iputils-ping \
  libffi-dev \
@@ -19,6 +20,7 @@ RUN /usr/bin/apt.postgresql.org.sh && \
  lzop postgresql-9.5 \
  postgresql-client-9.5 \
  postgresql-contrib-9.5 \
+ python-dev \
  python-pip \
  python-setuptools \
  pv \

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from subprocess import CalledProcessError, check_call
 
@@ -6,12 +6,12 @@ import os
 import time
 
 def monitor():
-	while True:
+        while True:
                 time.sleep({{ backup_interval }})
-		try:
-			check_call(['sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-push', '{{ data_directory }}'])
-		except CalledProcessError as error:
+                try:
+                        check_call(['sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-push', '{{ data_directory }}'])
+                except CalledProcessError as error:
                         pass
 
 if __name__ == "__main__":
-	monitor()
+        monitor()

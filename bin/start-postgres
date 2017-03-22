@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from jinja2 import Environment, FileSystemLoader
 from subprocess import check_call, Popen
@@ -250,6 +250,10 @@ if __name__ == "__main__":
                                 pg_base_restore(configuration['data_directory'])
                         else:
                                 pg_sync(configuration['master_host'], configuration['data_directory'])
+
+                        recovery = templates.get_template('recovery.conf.template').render(configuration)
+                        write(recovery, configuration['data_directory'] + '/recovery.conf')
+                        chown(configuration['data_directory'] + '/recovery.conf', 'postgres', 'postgres')
                 # Write pg_hba.conf
                 pg_hba = templates.get_template('pg_hba.conf.template').render(configuration)
                 write(pg_hba, '/etc/postgresql/9.5/main/pg_hba.conf')
@@ -258,6 +262,7 @@ if __name__ == "__main__":
                 write(postgresql, '/etc/postgresql/9.5/main/postgresql.conf')
                 # Check SSL permissions
                 chmod('/var/lib/postgresql/ssl', 0o600)
+                chown('/var/lib/postgresql/ssl', 'postgres', 'postgres')
                 # Start the container.
                 start('postgresql')
                 if configuration['wale_restore'] == False:
@@ -280,12 +285,12 @@ if __name__ == "__main__":
                         heartbeat = templates.get_template('heartbeat.template').render(configuration)
                         write(heartbeat, '/usr/bin/heartbeat')
                         chmod('/usr/bin/heartbeat', 0o755)
-                        run('heartbeat')
+                        run('/usr/bin/heartbeat')
                 if configuration['wale_enabled']:
                         backupcron = templates.get_template('backupcron.template').render(configuration)
                         write(backupcron, '/usr/bin/backupcron')
                         chmod('/usr/bin/backupcron', 0o755)
-                        runbg('backupcron')
+                        runbg('/usr/bin/backupcron')
 
         # Print the log to stdout.
         try:

@@ -9,17 +9,28 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > /etc/
  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && \
  apt-get update && \
  apt-get install -y \
+ build-essential \
  daemontools \
+ iputils-ping \
  libffi-dev \
  libssl-dev \
  lzop postgresql-9.6 \
  postgresql-client-9.6 \
  postgresql-contrib-9.6 \
+ python3-dev \
+ python3-pip \
+ python3-setuptools \
  pv \
- sudo && \
- pip3 install --upgrade six && \
- pip3 install Jinja2 wal-e boto && \
+ sudo
+
+RUN pip3 install --upgrade six && \
+ pip3 install Jinja2 boto wal-e && \
  apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Set the locale
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 # Post Install Configuration.
 ADD bin/start-postgres /usr/bin/start-postgres
@@ -40,6 +51,7 @@ RUN mkdir -p /var/lib/postgresql/ssl ;\
     cp /etc/ssl/private/ssl-cert-snakeoil.key /var/lib/postgresql/ssl/ ;\
     chown -R postgres:postgres /var/lib/postgresql/ssl/ssl-cert-snakeoil.* ;\
     chmod 600 /var/lib/postgresql/ssl/*
+    chmod 600 /var/lib/postgresql/ssl
 
 
 # Open the container up to the world.

@@ -256,6 +256,8 @@ if __name__ == "__main__":
                 # Write postgresql.conf
                 postgresql = templates.get_template('postgresql.conf.template').render(configuration)
                 write(postgresql, '/etc/postgresql/9.5/main/postgresql.conf')
+                # Check SSL permissions
+                chmod('/var/lib/postgresql/ssl', 0o600)
                 # Start the container.
                 start('postgresql')
                 if configuration['wale_restore'] == False:

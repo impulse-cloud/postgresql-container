@@ -260,6 +260,7 @@ if __name__ == "__main__":
                 write(postgresql, '/etc/postgresql/9.6/main/postgresql.conf')
                 # Check SSL permissions
                 chmod('/var/lib/postgresql/ssl', 0o600)
+                os.chmod('/var/lib/postgresql/ssl', 0o700)
                 chown('/var/lib/postgresql/ssl', 'postgres', 'postgres')
                 # Start the container.
                 start('postgresql')

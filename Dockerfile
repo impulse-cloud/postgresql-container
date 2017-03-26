@@ -51,7 +51,7 @@ RUN mkdir -p /var/lib/postgresql/ssl ;\
     cp /etc/ssl/private/ssl-cert-snakeoil.key /var/lib/postgresql/ssl/ ;\
     chown -R postgres:postgres /var/lib/postgresql/ssl/ssl-cert-snakeoil.* ;\
     chmod 600 /var/lib/postgresql/ssl/* ;\
-    chmod 600 /var/lib/postgresql/ssl
+    chmod 700 /var/lib/postgresql/ssl
 
 
 # Open the container up to the world.

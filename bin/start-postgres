@@ -256,6 +256,7 @@ if __name__ == "__main__":
                 write(pg_hba, '/etc/postgresql/9.6/main/pg_hba.conf')
                 # Write postgresql.conf
                 postgresql = templates.get_template('postgresql.conf.template').render(configuration)
+                print(postgresql)
                 write(postgresql, '/etc/postgresql/9.6/main/postgresql.conf')
                 # Check SSL permissions
                 chmod('/var/lib/postgresql/ssl', 0o600)

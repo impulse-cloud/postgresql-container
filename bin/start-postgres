@@ -67,7 +67,7 @@ def pg_get_configuration():
         value = os.getenv('PG_ALLOWED_ADDRESSES', '0.0.0.0/0').split(',')
         configuration.update({ 'allowed_addresses': value })
         # Get the database data directory.
-        value = os.getenv('PG_DATA_DIRECTORY', '/var/lib/postgresql/9.6/main')
+        value = os.getenv('PG_DATA_DIRECTORY', '/var/lib/postgresql/11/main')
         configuration.update({ 'data_directory': value })
         # Get the maximum number of connections allowed to the db.
         value = os.getenv('PG_MAX_CONNECTIONS', 100)
@@ -105,11 +105,29 @@ def pg_get_configuration():
         # Random Page Cost
         value = os.getenv('PG_RANDOM_PAGE_COST', 4.0)
         configuration.update({ 'random_page_cost': value })
+        # parallel_tuple_cost
+        value = os.getenv('PG_PARALLEL_TUPLE_COST', 0.1)
+        configuration.update({ 'parallel_tuple_cost': value })
+        # parallel_setup_cost
+        value = os.getenv('PG_PARALLEL_SETUP_COST', 1000.0)
+        configuration.update({ 'parallel_setup_cost': value })
+        # effective_io_concurrency
+        value = os.getenv('PG_EFFECTIVE_IO_CONCURRENCY', 1)
+        configuration.update({ 'effective_io_concurrency': value })
         # Log SQL statements which take longer than this in ms
         value = os.getenv('PG_LOG_MIN_DURATION_STATEMENT', -1)
         configuration.update({ 'log_min_duration_statement': value })
+        # Max worker processes
+        value = os.getenv('PG_MAX_WORKER_PROCESSES', 8)
+        configuration.update({ 'max_worker_processes': value })
+        # max_parallel_workers_per_gather
+        value = os.getenv('PG_MAX_PARALLEL_WORKERS_PER_GATHER', 2)
+        configuration.update({ 'max_parallel_workers_per_gather': value })
+        # max_parallel_workers
+        value = os.getenv('PG_MAX_PARALLEL_WORKERS', 2)
+        configuration.update({ 'max_parallel_workers': value })
         # Get the database write ahead log level.
-        value = os.getenv('PG_WAL_LEVEL', 'minimal')
+        value = os.getenv('PG_WAL_LEVEL', 'replica')
         configuration.update({ 'wal_level': value })
         # Get the minimum size to let the WAL grow to between automatic checkpoints.
         value = os.getenv('PG_MIN_WAL_SIZE', '80MB')
@@ -118,7 +136,7 @@ def pg_get_configuration():
         value = os.getenv('PG_MAX_WAL_SIZE', '1GB')
         configuration.update({ 'max_wal_size': value })
         # Get the number of write ahead log senders.
-        value = os.getenv('PG_MAX_WAL_SENDERS', 3)
+        value = os.getenv('PG_MAX_WAL_SENDERS', 10)
         configuration.update({ 'max_wal_senders': value })
         # Get the number of write ahead log segments to keep around for replication.
         value = os.getenv('PG_WAL_KEEP_SEGMENTS', 8)
@@ -169,8 +187,8 @@ def pg_base_restore(data_directory):
         run('sudo', '-u', 'postgres', 'envdir', '/etc/wal-e.d/env', 'wal-e', 'backup-fetch', data_directory, 'LATEST')
 
 def pg_change_data_directory(data_directory):
-        run('pg_dropcluster', '--stop', '9.6', 'main')
-        run('pg_createcluster', '-d', data_directory, '9.6', 'main')
+        run('pg_dropcluster', '--stop', '11', 'main')
+        run('pg_createcluster', '-d', data_directory, '11', 'main')
         chown(data_directory, 'postgres', 'postgres')
 
 def pg_run_query(query, database = None):
@@ -218,7 +236,7 @@ def write(template, path):
 
 if __name__ == "__main__":
         # Initialize Jinja2
-        loader = FileSystemLoader('/usr/share/postgresql/9.6')
+        loader = FileSystemLoader('/usr/share/postgresql/11')
         templates = Environment(loader = loader)
         # Load the configuration into a dictionary.
         configuration = pg_get_configuration()
@@ -244,6 +262,7 @@ if __name__ == "__main__":
                          configuration['role'] == 'slave'):
                         # Copy data from the master and create the recovery file.
                         if configuration['wale_restore']:
+                                print('======== RESTORING WITH WAL-E ===========')
                                 pg_base_restore(configuration['data_directory'])
                         else:
                                 pg_sync(configuration['master_host'], configuration['data_directory'])
@@ -253,11 +272,11 @@ if __name__ == "__main__":
                         chown(configuration['data_directory'] + '/recovery.conf', 'postgres', 'postgres')
                 # Write pg_hba.conf
                 pg_hba = templates.get_template('pg_hba.conf.template').render(configuration)
-                write(pg_hba, '/etc/postgresql/9.6/main/pg_hba.conf')
+                write(pg_hba, '/etc/postgresql/11/main/pg_hba.conf')
                 # Write postgresql.conf
                 postgresql = templates.get_template('postgresql.conf.template').render(configuration)
                 print(postgresql)
-                write(postgresql, '/etc/postgresql/9.6/main/postgresql.conf')
+                write(postgresql, '/etc/postgresql/11/main/postgresql.conf')
                 # Check SSL permissions
                 chmod('/var/lib/postgresql/ssl', 0o600)
                 os.chmod('/var/lib/postgresql/ssl', 0o700)
@@ -293,6 +312,6 @@ if __name__ == "__main__":
 
         # Print the log to stdout.
         try:
-                run('tail', '-F', '/var/log/postgresql/postgresql-9.6-main.log')
+                run('tail', '-F', '/var/log/postgresql/postgresql-11-main.log')
         except KeyboardInterrupt:
                 print('Exiting...')

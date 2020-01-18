@@ -14,10 +14,9 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > /etc/
  iputils-ping \
  libffi-dev \
  libssl-dev \
- lzop postgresql-11 \
- postgresql-client-11 \
- postgresql-contrib-11 \
- postgresql-11-pglogical \
+ lzop postgresql-12 \
+ postgresql-client-12 \
+ postgresql-contrib-12 \
  python3-dev \
  python3-pip \
  python3-setuptools \
@@ -38,11 +37,11 @@ ADD bin/start-postgres /usr/bin/start-postgres
 RUN chmod +x /usr/bin/start-postgres
 ADD bin/docker-wait /usr/bin/docker-wait
 RUN chmod +x /usr/bin/docker-wait
-ADD bin/heartbeat.template /usr/share/postgresql/11/heartbeat.template
-ADD bin/backupcron.template /usr/share/postgresql/11/backupcron.template
-ADD conf/postgresql.conf.template /usr/share/postgresql/11/postgresql.conf.template
-ADD conf/pg_hba.conf.template /usr/share/postgresql/11/pg_hba.conf.template
-ADD conf/recovery.conf.template /usr/share/postgresql/11/recovery.conf.template
+ADD bin/heartbeat.template /usr/share/postgresql/12/heartbeat.template
+ADD bin/backupcron.template /usr/share/postgresql/12/backupcron.template
+ADD conf/postgresql.conf.template /usr/share/postgresql/12/postgresql.conf.template
+ADD conf/pg_hba.conf.template /usr/share/postgresql/12/pg_hba.conf.template
+ADD conf/recovery.conf.template /usr/share/postgresql/12/recovery.conf.template
 
 # work around for AUFS bug
 # as per https://github.com/docker/docker/issues/783#issuecomment-56013588

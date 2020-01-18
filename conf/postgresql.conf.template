@@ -40,13 +40,13 @@
 
 data_directory = '{{ data_directory }}'         # use data in another directory
                                         # (change requires restart)
-hba_file = '/etc/postgresql/11/main/pg_hba.conf'        # host-based authentication file
+hba_file = '/etc/postgresql/12/main/pg_hba.conf'        # host-based authentication file
                                         # (change requires restart)
-ident_file = '/etc/postgresql/11/main/pg_ident.conf'    # ident configuration file
+ident_file = '/etc/postgresql/12/main/pg_ident.conf'    # ident configuration file
                                         # (change requires restart)
 
 # If external_pid_file is not explicitly set, no extra PID file is written.
-external_pid_file = '/var/run/postgresql/11-main.pid'                   # write an extra PID file
+external_pid_file = '/var/run/postgresql/12-main.pid'                   # write an extra PID file
                                         # (change requires restart)
 
 
@@ -249,6 +249,9 @@ archive_timeout = 60            # force a logfile segment switch after this
 
 # These are only used in recovery mode.
 
+{% if wale_restore %}
+restore_command = 'envdir /etc/wal-e.d/env /usr/local/bin/wal-e wal-fetch "%f" "%p"'
+{% endif %}
 #restore_command = ''		# command to use to restore an archived logfile segment
 				# placeholders: %p = path of file to restore
 				#               %f = file name only
@@ -321,6 +324,10 @@ wal_keep_segments = {{ wal_keep_segments }}          # in logfile segments; 0 di
 
 # These settings are ignored on a master server.
 
+{% if role == 'slave' %}
+primary_conninfo = 'host={{ master_host }} port={{ master_host_port }} user=postgres password={{ password }}'
+promote_trigger_file = '{{ data_directory }}/failover'
+{% endif %}
 #primary_conninfo = ''			# connection string to sending server
 					# (change requires restart)
 #primary_slot_name = ''			# replication slot on sending server
@@ -691,7 +698,7 @@ default_text_search_config = 'pg_catalog.english'
 
 # - Shared Library Preloading -
 
-shared_preload_libraries = 'pglogical'	# (change requires restart)
+#shared_preload_libraries = ''	        # (change requires restart)
 #local_preload_libraries = ''
 #session_preload_libraries = ''
 #jit_provider = 'llvmjit'		# JIT library to use

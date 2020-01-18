@@ -41,7 +41,6 @@ ADD bin/heartbeat.template /usr/share/postgresql/12/heartbeat.template
 ADD bin/backupcron.template /usr/share/postgresql/12/backupcron.template
 ADD conf/postgresql.conf.template /usr/share/postgresql/12/postgresql.conf.template
 ADD conf/pg_hba.conf.template /usr/share/postgresql/12/pg_hba.conf.template
-ADD conf/recovery.conf.template /usr/share/postgresql/12/recovery.conf.template
 
 # work around for AUFS bug
 # as per https://github.com/docker/docker/issues/783#issuecomment-56013588

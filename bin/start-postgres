@@ -275,7 +275,7 @@ if __name__ == "__main__":
 
                         if configuration['role'] == 'slave':
                             touch(configuration['data_directory'] + '/standby.signal')
-                            chown(configuration['data_directory'] + '/recovery.signal', 'postgres', 'postgres')
+                            chown(configuration['data_directory'] + '/standby.signal', 'postgres', 'postgres')
                         else:
                             touch(configuration['data_directory'] + '/recovery.signal')
                             chown(configuration['data_directory'] + '/recovery.signal', 'postgres', 'postgres')

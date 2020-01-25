@@ -133,7 +133,7 @@ def pg_get_configuration():
         value = os.getenv('PG_MAX_PARALLEL_WORKERS', 2)
         configuration.update({ 'max_parallel_workers': value })
         # Get the database write ahead log level.
-        value = os.getenv('PG_WAL_LEVEL', 'replica')
+        value = os.getenv('PG_WAL_LEVEL', 'logical')
         configuration.update({ 'wal_level': value })
         # Get the minimum size to let the WAL grow to between automatic checkpoints.
         value = os.getenv('PG_MIN_WAL_SIZE', '80MB')

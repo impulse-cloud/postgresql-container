@@ -11,10 +11,12 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > /etc/
  apt-get install -y \
  build-essential \
  daemontools \
+ gdb \
  iputils-ping \
  libffi-dev \
  libssl-dev \
  lzop postgresql-12 \
+ postgresql-12-dbg \
  postgresql-client-12 \
  postgresql-contrib-12 \
  python3-dev \
@@ -33,6 +35,8 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 # Post Install Configuration.
+ADD bin/start-docker.sh /usr/bin/start-docker.sh
+RUN chmod +x /usr/bin/start-docker.sh
 ADD bin/start-postgres /usr/bin/start-postgres
 RUN chmod +x /usr/bin/start-postgres
 ADD bin/docker-wait /usr/bin/docker-wait
@@ -60,4 +64,4 @@ EXPOSE 5432/tcp
 VOLUME /etc/postgresql /var/lib/postgresql
 
 # Start PostgreSQL.
-CMD /usr/bin/start-postgres
+CMD /usr/bin/start-docker.sh

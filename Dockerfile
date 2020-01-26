@@ -6,11 +6,13 @@ MAINTAINER Johann du Toit <johann@winkreports.com>
 
 # Install.
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > /etc/apt/sources.list.d/pgdg.list && \
+ echo 'deb-src http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' >> /etc/apt/sources.list.d/pgdg.list && \
  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && \
  apt-get update && \
  apt-get install -y \
  build-essential \
  daemontools \
+ devscripts \
  iputils-ping \
  libffi-dev \
  libssl-dev \
@@ -22,6 +24,15 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > /etc/
  python3-setuptools \
  pv \
  sudo
+
+RUN cd /tmp && \
+ apt-get build-dep -y postgresql-12 && \
+ wget https://ftp.postgresql.org/pub/snapshot/12/postgresql-12-snapshot.tar.gz && \
+ tar -zxvf postgresql-12-snapshot.tar.gz && \
+ cd postgresql-12.1 && \
+ ./configure --build=x86_64-linux-gnu --prefix=/usr --includedir=\${prefix}/include --mandir=\${prefix}/share/man --infodir=\${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-silent-rules --libdir=\${prefix}/lib/x86_64-linux-gnu --libexecdir=\${prefix}/lib/x86_64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --with-icu --with-tcl --with-perl --with-python --with-pam --with-openssl --with-libxml --with-libxslt PYTHON=/usr/bin/python3 --mandir=/usr/share/postgresql/12/man --docdir=/usr/share/doc/postgresql-doc-12 --sysconfdir=/etc/postgresql-common --datarootdir=/usr/share/ --datadir=/usr/share/postgresql/12 --bindir=/usr/lib/postgresql/12/bin --libdir=/usr/lib/x86_64-linux-gnu/ --libexecdir=/usr/lib/postgresql/ --includedir=/usr/include/postgresql/ "--with-extra-version= (Ubuntu 12.1-1.pgdg16.04+1)" --enable-nls --enable-integer-datetimes --enable-thread-safety --enable-tap-tests --enable-debug --enable-dtrace --disable-rpath --with-uuid=e2fs --with-gnu-ld --with-pgport=5432 --with-system-tzdata=/usr/share/zoneinfo --with-llvm LLVM_CONFIG=/usr/bin/llvm-config-6.0 CLANG=/usr/bin/clang-6.0 --with-systemd --with-selinux "MKDIR_P=/bin/mkdir -p" TAR=/bin/tar "CFLAGS=-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -fPIC -pie -fno-omit-frame-pointer" "LDFLAGS=-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now" --with-gssapi --with-ldap --with-includes=/usr/include/mit-krb5 --with-libs=/usr/lib/mit-krb5 --with-libs=/usr/lib/x86_64-linux-gnu/mit-krb5 && \
+ make && \
+ make install
 
 RUN pip3 install --upgrade six && \
  pip3 install Jinja2 boto wal-e && \

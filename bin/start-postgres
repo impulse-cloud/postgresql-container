@@ -127,10 +127,10 @@ def pg_get_configuration():
         value = os.getenv('PG_MAX_WORKER_PROCESSES', 8)
         configuration.update({ 'max_worker_processes': value })
         # max_parallel_workers_per_gather
-        value = os.getenv('PG_MAX_PARALLEL_WORKERS_PER_GATHER', 2)
+        value = os.getenv('PG_MAX_PARALLEL_WORKERS_PER_GATHER', 4)
         configuration.update({ 'max_parallel_workers_per_gather': value })
         # max_parallel_workers
-        value = os.getenv('PG_MAX_PARALLEL_WORKERS', 2)
+        value = os.getenv('PG_MAX_PARALLEL_WORKERS', 8)
         configuration.update({ 'max_parallel_workers': value })
         # Get the database write ahead log level.
         value = os.getenv('PG_WAL_LEVEL', 'logical')
